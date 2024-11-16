@@ -29,6 +29,12 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 #include "rlgl.h"
 
+
+#include <stdio.h>
+
+#define debug(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+
+
 struct Ball {
 	float x;
 	float y;
@@ -96,8 +102,8 @@ void InitBalls() {
 void MoveBalls() {
 	for (int i = 0; i < ballCount; i++) {
 		float time = GetFrameTime();
-		balls[i].x += ballSpeed * time * (balls[i].dir == 0 || balls[i].dir == 2 ? 1 : -1);
-		balls[i].y += ballSpeed * time * (balls[i].dir == 1 || balls[i].dir == 3 ? 1 : -1);
+		balls[i].x += (ballSpeed * time * (balls[i].dir == 0 || balls[i].dir == 1 ? 1 : -1));
+		balls[i].y += (ballSpeed * time * (balls[i].dir == 1 || balls[i].dir == 2 ? 1 : -1));
 	}
 }
 
