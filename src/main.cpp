@@ -30,6 +30,7 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 #include "rlgl.h"
 
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #define debug(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
@@ -132,7 +133,7 @@ int main ()
 
 void InitBalls() {
 	for (int i = 0; i < ballCount; i++) {
-		balls[i] = { (i + 1) * 50.f, (i + 1) * 50.f, 10, ballDirs[i % 4] };
+		balls[i] = { (i + 1) * 50.f, (i + 1) * 50.f, 10, ballDirs[rand() % 4] };
 	}
 }
 
