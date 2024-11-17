@@ -56,6 +56,8 @@ struct Stats {
 	int AreaCleared = 0;
 };
 
+Stats LevelStats;
+
 const int ballCount = 5;
 int ballSpeed = 150;
 
@@ -114,7 +116,6 @@ int main ()
 		DrawRectangle(GetScreenWidth() - BORDER_WIDTH, 0, BORDER_WIDTH, GetScreenHeight(), BLACK);
 
 		// Draw stat text
-		Stats LevelStats;
 		DrawText(TextFormat("Lives: %d", LevelStats.Lives), 25, 25, 25, WHITE);
 		DrawText(TextFormat("Score: %d", LevelStats.Score), ((GetScreenWidth() - 75) / 2), 25, 25, WHITE);
 		DrawText(TextFormat("Time Left: %d", LevelStats.TimeLeft), (GetScreenWidth() - 200), 25, 25, WHITE);
