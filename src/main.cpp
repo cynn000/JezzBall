@@ -34,22 +34,38 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #define debug(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
 
+typedef int Dir;
+
+const Dir UP = 1;
+const Dir RIGHT = 2;
+const Dir DOWN = 4;
+const Dir LEFT = 8;
 
 struct Ball {
 	float x;
 	float y;
 	int radius;
-	int dir;
+	Dir dir;
 };
 
 const int ballCount = 5;
-int ballSpeed = 50;
+int ballSpeed = 150;
 
 Ball balls[ballCount];
 
 void DrawBalls();
 void InitBalls();
 void MoveBalls();
+
+const int width = 1280;
+const int height = 800;
+
+const Dir ballDirs[4] = {
+	UP | LEFT,
+	UP | RIGHT,
+	DOWN | RIGHT,
+	DOWN | LEFT
+};
 
 int main ()
 {
@@ -75,9 +91,10 @@ int main ()
 
 		// Draw grid for JezzBall playing area
 		rlPushMatrix();
-		rlTranslatef(0, 25 * 50, 0);
-		rlRotatef(90, 1, 0, 0);
-		DrawGrid(1000, 25);
+			rlTranslatef(0, 25 * 50, 0);
+			rlRotatef(90, 1, 0, 0);
+			
+			DrawGrid(1000, 25);
 		rlPopMatrix();
 
 		MoveBalls();
@@ -95,15 +112,51 @@ int main ()
 
 void InitBalls() {
 	for (int i = 0; i < ballCount; i++) {
-		balls[i] = { (i + 1) * 50.f, (i + 1) * 50.f, 10, i % 4 };
+		balls[i] = { (i + 1) * 50.f, (i + 1) * 50.f, 10, ballDirs[i % 4] };
 	}
 }
 
 void MoveBalls() {
 	for (int i = 0; i < ballCount; i++) {
 		float time = GetFrameTime();
-		balls[i].x += (ballSpeed * time * (balls[i].dir == 0 || balls[i].dir == 1 ? 1 : -1));
-		balls[i].y += (ballSpeed * time * (balls[i].dir == 1 || balls[i].dir == 2 ? 1 : -1));
+		balls[i].x += (ballSpeed * time * (balls[i].dir == (UP | RIGHT) || balls[i].dir == (DOWN | RIGHT) ? 1 : -1));
+		balls[i].y += (ballSpeed * time * (balls[i].dir == (DOWN | RIGHT) || balls[i].dir == (DOWN | LEFT) ? 1 : -1));
+
+		if (balls[i].x + balls[i].radius > width) {
+			balls[i].x = width - balls[i].radius;
+
+			if (balls[i].dir & RIGHT) {
+				balls[i].dir &= ~RIGHT;
+				balls[i].dir |= LEFT;
+			}
+		}
+
+		if (balls[i].y + balls[i].radius > height) {
+			balls[i].y = height - balls[i].radius;
+
+			if (balls[i].dir & DOWN) {
+				balls[i].dir &= ~DOWN;
+				balls[i].dir |= UP;
+			}
+		}
+
+		if (balls[i].x - balls[i].radius < 0) {
+			balls[i].x = balls[i].radius;
+
+			if (balls[i].dir & LEFT) { 
+				balls[i].dir &= ~LEFT;
+				balls[i].dir |= RIGHT;
+			}
+		}
+
+		if (balls[i].y - balls[i].radius < 0) {
+			balls[i].y = balls[i].radius;
+
+			if (balls[i].dir & UP) {
+				balls[i].dir &= ~UP;
+				balls[i].dir |= DOWN;
+			}
+		}
 	}
 }
 
