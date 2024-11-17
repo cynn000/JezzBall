@@ -68,6 +68,8 @@ void MoveBalls();
 const int width = 1280;
 const int height = 800;
 
+const int BORDER_WIDTH = 75;
+
 const Dir ballDirs[4] = {
 	UP | LEFT,
 	UP | RIGHT,
@@ -97,11 +99,19 @@ int main ()
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(RAYWHITE);
 
+		// Draw grid for JezzBall playing area
+		rlPushMatrix();
+			rlTranslatef(0, 25 * 50, 0);
+			rlRotatef(90, 1, 0, 0);
+
+			DrawGrid(1000, 25.f);
+		rlPopMatrix();
+
 		// Draw borders
-		DrawRectangle(0, 0, GetScreenWidth(), 75, BLACK);
-		DrawRectangle(0, GetScreenHeight() - 75, GetScreenWidth(), 75, BLACK);
-		DrawRectangle(0, 0, 75, GetScreenHeight(), BLACK);
-		DrawRectangle(GetScreenWidth() - 75, 0, 100, GetScreenHeight(), BLACK);
+		DrawRectangle(0, 0, GetScreenWidth(), BORDER_WIDTH, BLACK);
+		DrawRectangle(0, GetScreenHeight() - BORDER_WIDTH, GetScreenWidth(), BORDER_WIDTH, BLACK);
+		DrawRectangle(0, 0, BORDER_WIDTH, GetScreenHeight(), BLACK);
+		DrawRectangle(GetScreenWidth() - BORDER_WIDTH, 0, BORDER_WIDTH, GetScreenHeight(), BLACK);
 
 		// Draw stat text
 		Stats LevelStats;
@@ -110,14 +120,6 @@ int main ()
 		DrawText(TextFormat("Time Left: %d", LevelStats.TimeLeft), (GetScreenWidth() - 200), 25, 25, WHITE);
 		DrawText(TextFormat("Area Cleared: %d", LevelStats.AreaCleared), ((GetScreenWidth() - 75) / 2), (GetScreenHeight() - 50), 25, WHITE);
 		
-		// Draw grid for JezzBall playing area
-		rlPushMatrix();
-			rlTranslatef(0, 25 * 50, 0);
-			rlRotatef(90, 1, 0, 0);
-			
-			DrawGrid(1000, 25.f);
-		rlPopMatrix();
-
 		MoveBalls();
 
 		DrawBalls();
@@ -133,7 +135,7 @@ int main ()
 
 void InitBalls() {
 	for (int i = 0; i < ballCount; i++) {
-		balls[i] = { (i + 1) * 50.f, (i + 1) * 50.f, 10, ballDirs[rand() % 4] };
+		balls[i] = { (i + 1) * 50.f + BORDER_WIDTH, (i + 1) * 50.f + BORDER_WIDTH, 10, ballDirs[rand() % 4] };
 	}
 }
 
@@ -143,8 +145,8 @@ void MoveBalls() {
 		balls[i].x += (ballSpeed * time * ((balls[i].dir & RIGHT) == RIGHT ? 1 : -1));
 		balls[i].y += (ballSpeed * time * ((balls[i].dir & DOWN) == DOWN ? 1 : -1));
 
-		if (balls[i].x + balls[i].radius > width) {
-			balls[i].x = width - balls[i].radius;
+		if (balls[i].x + balls[i].radius > width - BORDER_WIDTH) {
+			balls[i].x = width - BORDER_WIDTH - balls[i].radius;
 
 			if (balls[i].dir & RIGHT) {
 				balls[i].dir &= ~RIGHT;
@@ -152,8 +154,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].y + balls[i].radius > height) {
-			balls[i].y = height - balls[i].radius;
+		if (balls[i].y + balls[i].radius > height - BORDER_WIDTH) {
+			balls[i].y = height - BORDER_WIDTH - balls[i].radius;
 
 			if (balls[i].dir & DOWN) {
 				balls[i].dir &= ~DOWN;
@@ -161,8 +163,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].x - balls[i].radius < 0) {
-			balls[i].x = balls[i].radius;
+		if (balls[i].x - balls[i].radius < BORDER_WIDTH) {
+			balls[i].x = balls[i].radius + BORDER_WIDTH;
 
 			if (balls[i].dir & LEFT) { 
 				balls[i].dir &= ~LEFT;
@@ -170,8 +172,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].y - balls[i].radius < 0) {
-			balls[i].y = balls[i].radius;
+		if (balls[i].y - balls[i].radius < BORDER_WIDTH) {
+			balls[i].y = balls[i].radius + BORDER_WIDTH;
 
 			if (balls[i].dir & UP) {
 				balls[i].dir &= ~UP;
