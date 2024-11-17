@@ -48,6 +48,13 @@ struct Ball {
 	Dir dir;
 };
 
+struct Stats {
+	int Lives = 3;
+	int Score = 0;
+	int TimeLeft = 1000;
+	int AreaCleared = 0;
+};
+
 const int ballCount = 5;
 int ballSpeed = 150;
 
@@ -89,12 +96,25 @@ int main ()
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(RAYWHITE);
 
+		// Draw borders
+		DrawRectangle(0, 0, GetScreenWidth(), 75, BLACK);
+		DrawRectangle(0, GetScreenHeight() - 75, GetScreenWidth(), 75, BLACK);
+		DrawRectangle(0, 0, 75, GetScreenHeight(), BLACK);
+		DrawRectangle(GetScreenWidth() - 75, 0, 100, GetScreenHeight(), BLACK);
+
+		// Draw stat text
+		Stats LevelStats;
+		DrawText(TextFormat("Lives: %d", LevelStats.Lives), 25, 25, 25, WHITE);
+		DrawText(TextFormat("Score: %d", LevelStats.Score), ((GetScreenWidth() - 75) / 2), 25, 25, WHITE);
+		DrawText(TextFormat("Time Left: %d", LevelStats.TimeLeft), (GetScreenWidth() - 200), 25, 25, WHITE);
+		DrawText(TextFormat("Area Cleared: %d", LevelStats.AreaCleared), ((GetScreenWidth() - 75) / 2), (GetScreenHeight() - 50), 25, WHITE);
+		
 		// Draw grid for JezzBall playing area
 		rlPushMatrix();
 			rlTranslatef(0, 25 * 50, 0);
 			rlRotatef(90, 1, 0, 0);
 			
-			DrawGrid(1000, 25);
+			DrawGrid(1000, 25.f);
 		rlPopMatrix();
 
 		MoveBalls();
