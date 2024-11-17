@@ -119,8 +119,8 @@ void InitBalls() {
 void MoveBalls() {
 	for (int i = 0; i < ballCount; i++) {
 		float time = GetFrameTime();
-		balls[i].x += (ballSpeed * time * (balls[i].dir == (UP | RIGHT) || balls[i].dir == (DOWN | RIGHT) ? 1 : -1));
-		balls[i].y += (ballSpeed * time * (balls[i].dir == (DOWN | RIGHT) || balls[i].dir == (DOWN | LEFT) ? 1 : -1));
+		balls[i].x += (ballSpeed * time * ((balls[i].dir & RIGHT) == RIGHT ? 1 : -1));
+		balls[i].y += (ballSpeed * time * ((balls[i].dir & DOWN) == DOWN ? 1 : -1));
 
 		if (balls[i].x + balls[i].radius > width) {
 			balls[i].x = width - balls[i].radius;
