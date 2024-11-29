@@ -114,14 +114,13 @@ int main ()
 	// Source rectangle (part of the texture to use for drawing)
 	Rectangle sourceRec = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
 
-	Rectangle destRec = { GetMouseX(), GetMouseY(), frameWidth * 2.0f, frameHeight * 2.0f };
+	Rectangle destRec;
 
 	// Origin of the texture (rotation/scale point), it's relative to destination rectangle size
-	Vector2 origin = { (float)frameWidth, (float)frameHeight };
+	Vector2 origin = { (float)frameWidth / 2, (float)frameHeight / 2 };
 
 	DrawMode DrawMode = DrawMode::Vertical;
 	HideCursor();
-	DrawTexturePro(wabbit, sourceRec, destRec, origin, (float)90, RED);
 
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
