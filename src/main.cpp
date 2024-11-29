@@ -67,10 +67,18 @@ void DrawBalls();
 void InitBalls();
 void MoveBalls();
 
-const int width = 1280;
-const int height = 800;
-
 const int BORDER_WIDTH = 75;
+
+const int stageWidth = 28;
+const int stageHeight = 20;
+
+const int gridSize = 25;
+
+const int playAreaWidth = stageWidth * gridSize;
+const int playAreaHeight = stageHeight * gridSize;
+
+int playAreaX = BORDER_WIDTH;
+int playAreaY = BORDER_WIDTH;
 
 const Dir ballDirs[4] = {
 	UP | LEFT,
@@ -91,29 +99,36 @@ int main ()
 	SearchAndSetResourceDir("resources");
 
 	InitBalls();
+
+	Camera2D camera = { 0 };
+	camera.zoom = 1.f;
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
+		playAreaX = GetScreenWidth() / 2 - playAreaWidth / 2;
+		playAreaY = GetScreenHeight() / 2 - playAreaHeight / 2;
+
 		// drawing
 		BeginDrawing();
 
 		// Setup the back buffer for drawing (clear color and depth buffers)
-		ClearBackground(RAYWHITE);
+		ClearBackground(BLACK);
 
-		// Draw grid for JezzBall playing area
-		rlPushMatrix();
-			rlTranslatef(0, 25 * 50, 0);
-			rlRotatef(90, 1, 0, 0);
+		// draw the background for the play area
+		DrawRectangle(playAreaX, playAreaY, playAreaWidth, playAreaHeight, RAYWHITE);
 
-			DrawGrid(1000, 25.f);
-		rlPopMatrix();
+		//BeginMode2D(camera);
 
-		// Draw borders
-		DrawRectangle(0, 0, GetScreenWidth(), BORDER_WIDTH, BLACK);
-		DrawRectangle(0, GetScreenHeight() - BORDER_WIDTH, GetScreenWidth(), BORDER_WIDTH, BLACK);
-		DrawRectangle(0, 0, BORDER_WIDTH, GetScreenHeight(), BLACK);
-		DrawRectangle(GetScreenWidth() - BORDER_WIDTH, 0, BORDER_WIDTH, GetScreenHeight(), BLACK);
+			for (int w = 0; w < stageWidth; w++) {
+				DrawLine(playAreaX + w * gridSize, playAreaY, playAreaX + w * gridSize, playAreaY + playAreaHeight, GRAY);
+			}
+
+			for (int h = 0; h < stageHeight; h++) {
+				DrawLine(playAreaX, playAreaY + h * gridSize, playAreaX + playAreaWidth, playAreaY + h * gridSize, GRAY);
+			}
+
+		//EndMode2D();
 
 		// Draw stat text
 		DrawText(TextFormat("Lives: %d", LevelStats.Lives), 25, 25, 25, WHITE);
@@ -146,8 +161,8 @@ void MoveBalls() {
 		balls[i].x += (ballSpeed * time * ((balls[i].dir & RIGHT) == RIGHT ? 1 : -1));
 		balls[i].y += (ballSpeed * time * ((balls[i].dir & DOWN) == DOWN ? 1 : -1));
 
-		if (balls[i].x + balls[i].radius > width - BORDER_WIDTH) {
-			balls[i].x = width - BORDER_WIDTH - balls[i].radius;
+		if (balls[i].x + balls[i].radius > playAreaWidth) {
+			balls[i].x = playAreaWidth - balls[i].radius;
 
 			if (balls[i].dir & RIGHT) {
 				balls[i].dir &= ~RIGHT;
@@ -155,8 +170,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].y + balls[i].radius > height - BORDER_WIDTH) {
-			balls[i].y = height - BORDER_WIDTH - balls[i].radius;
+		if (balls[i].y + balls[i].radius > playAreaHeight) {
+			balls[i].y = playAreaHeight - balls[i].radius;
 
 			if (balls[i].dir & DOWN) {
 				balls[i].dir &= ~DOWN;
@@ -164,8 +179,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].x - balls[i].radius < BORDER_WIDTH) {
-			balls[i].x = balls[i].radius + BORDER_WIDTH;
+		if (balls[i].x - balls[i].radius < 0) {
+			balls[i].x = balls[i].radius;
 
 			if (balls[i].dir & LEFT) { 
 				balls[i].dir &= ~LEFT;
@@ -173,8 +188,8 @@ void MoveBalls() {
 			}
 		}
 
-		if (balls[i].y - balls[i].radius < BORDER_WIDTH) {
-			balls[i].y = balls[i].radius + BORDER_WIDTH;
+		if (balls[i].y - balls[i].radius < 0) {
+			balls[i].y = balls[i].radius;
 
 			if (balls[i].dir & UP) {
 				balls[i].dir &= ~UP;
@@ -186,6 +201,6 @@ void MoveBalls() {
 
 void DrawBalls() {
 	for (int i = 0; i < ballCount; i++) {
-		DrawCircle(balls[i].x, balls[i].y, balls[i].radius, RED);
+		DrawCircle(balls[i].x + playAreaX, balls[i].y + playAreaY, balls[i].radius, RED);
 	}
 }
