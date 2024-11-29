@@ -87,6 +87,11 @@ const Dir ballDirs[4] = {
 	DOWN | LEFT
 };
 
+enum class DrawMode {
+	Vertical,
+	Horizontal
+};
+
 int main ()
 {
 	// Tell the window to use vsync and work on high DPI displays
@@ -100,14 +105,29 @@ int main ()
 
 	InitBalls();
 
-	Camera2D camera = { 0 };
-	camera.zoom = 1.f;
+	DrawMode DrawMode = DrawMode::Vertical;
+	SetMouseCursor(MOUSE_CURSOR_RESIZE_NS);
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
 		playAreaX = GetScreenWidth() / 2 - playAreaWidth / 2;
 		playAreaY = GetScreenHeight() / 2 - playAreaHeight / 2;
+
+		// Set mouse cursor for draw mode
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+		{
+			if (DrawMode == DrawMode::Vertical)
+			{
+				DrawMode = DrawMode::Horizontal;
+				SetMouseCursor(MOUSE_CURSOR_RESIZE_EW);
+			}
+			else
+			{
+				DrawMode = DrawMode::Vertical;
+				SetMouseCursor(MOUSE_CURSOR_RESIZE_NS);
+			}
+		}
 
 		// drawing
 		BeginDrawing();
@@ -135,7 +155,7 @@ int main ()
 		DrawText(TextFormat("Score: %d", LevelStats.Score), ((GetScreenWidth() - 75) / 2), 25, 25, WHITE);
 		DrawText(TextFormat("Time Left: %d", LevelStats.TimeLeft), (GetScreenWidth() - 200), 25, 25, WHITE);
 		DrawText(TextFormat("Area Cleared: %d", LevelStats.AreaCleared), ((GetScreenWidth() - 75) / 2), (GetScreenHeight() - 50), 25, WHITE);
-		
+
 		MoveBalls();
 
 		DrawBalls();
