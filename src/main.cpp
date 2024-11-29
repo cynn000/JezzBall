@@ -105,9 +105,24 @@ int main ()
 
 	InitBalls();
 
+	// Load a texture from the resources directory
+	Texture wabbit = LoadTexture("wabbit_alpha.png");
+
+	int frameWidth = wabbit.width;
+	int frameHeight = wabbit.height;
+
+	// Source rectangle (part of the texture to use for drawing)
+	Rectangle sourceRec = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
+
+	Rectangle destRec = { GetMouseX(), GetMouseY(), frameWidth * 2.0f, frameHeight * 2.0f };
+
+	// Origin of the texture (rotation/scale point), it's relative to destination rectangle size
+	Vector2 origin = { (float)frameWidth, (float)frameHeight };
+
 	DrawMode DrawMode = DrawMode::Vertical;
-	SetMouseCursor(MOUSE_CURSOR_RESIZE_NS);
-	
+	HideCursor();
+	DrawTexturePro(wabbit, sourceRec, destRec, origin, (float)90, RED);
+
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
@@ -120,12 +135,10 @@ int main ()
 			if (DrawMode == DrawMode::Vertical)
 			{
 				DrawMode = DrawMode::Horizontal;
-				SetMouseCursor(MOUSE_CURSOR_RESIZE_EW);
 			}
 			else
 			{
 				DrawMode = DrawMode::Vertical;
-				SetMouseCursor(MOUSE_CURSOR_RESIZE_NS);
 			}
 		}
 
@@ -159,6 +172,17 @@ int main ()
 		MoveBalls();
 
 		DrawBalls();
+
+		destRec = { (float)GetMouseX(), (float)GetMouseY(), (float)frameWidth, (float)frameHeight };
+
+		if (DrawMode == DrawMode::Vertical)
+		{
+			DrawTexturePro(wabbit, sourceRec, destRec, origin, (float)0, RED);
+		}
+		else
+		{
+			DrawTexturePro(wabbit, sourceRec, destRec, origin, (float)90, BLUE);
+		}
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
